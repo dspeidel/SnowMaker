@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime;
+using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -42,34 +44,34 @@ namespace SnowMaker.UnitTests
 
         [Test]
         [ExpectedException(typeof(UniqueIdGenerationException))]
-        public void NextIdShouldThrowExceptionOnCorruptData()
+        public async Task NextIdShouldThrowExceptionOnCorruptData()
         {
             var store = Substitute.For<IOptimisticDataStore>();
-            store.GetData("test").Returns("abc");
+            (await store.GetData("test")).Returns("abc");
 
             var generator = new UniqueIdGenerator(store);
 
-            generator.NextId("test");
+            await generator.NextId("test");
         }
 
         [Test]
         [ExpectedException(typeof(UniqueIdGenerationException))]
-        public void NextIdShouldThrowExceptionOnNullData()
+        public async Task NextIdShouldThrowExceptionOnNullData()
         {
             var store = Substitute.For<IOptimisticDataStore>();
-            store.GetData("test").Returns((string)null);
+            (await store.GetData("test")).Returns((string)null);
 
             var generator = new UniqueIdGenerator(store);
 
-            generator.NextId("test");
+            await generator.NextId("test");
         }
 
         [Test]
-        public void NextIdShouldReturnNumbersSequentially()
+        public async Task NextIdShouldReturnNumbersSequentially()
         {
             var store = Substitute.For<IOptimisticDataStore>();
-            store.GetData("test").Returns("0", "250");
-            store.TryOptimisticWrite("test", "3").Returns(true);
+            (await store.GetData("test")).Returns("0", "250");
+            (await store.TryOptimisticWrite("test", "3")).Returns(true);
 
             var subject = new UniqueIdGenerator(store)
             {
@@ -82,12 +84,12 @@ namespace SnowMaker.UnitTests
         }
 
         [Test]
-        public void NextIdShouldRollOverToNewBlockWhenCurrentBlockIsExhausted()
+        public async Task NextIdShouldRollOverToNewBlockWhenCurrentBlockIsExhausted()
         {
             var store = Substitute.For<IOptimisticDataStore>();
-            store.GetData("test").Returns("0", "250");
-            store.TryOptimisticWrite("test", "3").Returns(true);
-            store.TryOptimisticWrite("test", "253").Returns(true);
+            (await store.GetData("test")).Returns("0", "250");
+            (await store.TryOptimisticWrite("test", "3")).Returns(true);
+            (await store.TryOptimisticWrite("test", "253")).Returns(true);
 
             var subject = new UniqueIdGenerator(store)
             {
@@ -103,11 +105,11 @@ namespace SnowMaker.UnitTests
         }
 
         [Test]
-        public void NextIdShouldThrowExceptionWhenRetriesAreExhausted()
+        public async Task NextIdShouldThrowExceptionWhenRetriesAreExhausted()
         {
             var store = Substitute.For<IOptimisticDataStore>();
-            store.GetData("test").Returns("0");
-            store.TryOptimisticWrite("test", "3").Returns(false, false, false, true);
+            (await store.GetData("test")).Returns("0");
+            (await store.TryOptimisticWrite("test", "3")).Returns(false, false, false, true);
 
             var generator = new UniqueIdGenerator(store)
             {
@@ -116,7 +118,7 @@ namespace SnowMaker.UnitTests
 
             try
             {
-                generator.NextId("test");
+                await generator.NextId("test");
             }
             catch (Exception ex)
             {

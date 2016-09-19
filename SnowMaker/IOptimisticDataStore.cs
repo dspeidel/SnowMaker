@@ -1,8 +1,10 @@
-﻿namespace SnowMaker
+﻿using System.Threading.Tasks;
+
+namespace SnowMaker
 {
     public interface IOptimisticDataStore
     {
-        string GetData(string blockName);
-        bool TryOptimisticWrite(string blockName, string data);
+        Task<string> GetData(string blockName);
+        Task<bool> TryOptimisticWrite(string blockName, string data);
     }
 }

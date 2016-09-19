@@ -6,5 +6,7 @@ namespace IntegrationTests.cs
     {
         string IdScopeName { get; }
         string ReadCurrentPersistedValue();
+	    string ReadCurrentPersistedValue(string scopeId);
+
     }
 }

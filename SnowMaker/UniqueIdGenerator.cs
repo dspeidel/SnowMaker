@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SnowMaker
 {
@@ -9,7 +11,7 @@ namespace SnowMaker
     {
         readonly IOptimisticDataStore optimisticDataStore;
 
-        readonly IDictionary<string, ScopeState> states = new Dictionary<string, ScopeState>();
+        readonly ConcurrentDictionary<string, ScopeState> states = new ConcurrentDictionary<string, ScopeState>();
         readonly object statesLock = new object();
 
         int batchSize = 100;
@@ -38,34 +40,32 @@ namespace SnowMaker
             }
         }
 
-        public long NextId(string scopeName)
+        public async Task<long> NextId(string scopeName)
         {
             var state = GetScopeState(scopeName);
 
-            lock (state.IdGenerationLock)
-            {
-                if (state.LastId == state.HighestIdAvailableInBatch)
-                    UpdateFromSyncStore(scopeName, state);
+	        using (await state.IdGenerationLock.LockAsync())
+	        {
+				if (state.LastId == state.HighestIdAvailableInBatch)
+					await UpdateFromSyncStore(scopeName, state);
 
-                return Interlocked.Increment(ref state.LastId);
-            }
+				return Interlocked.Increment(ref state.LastId);
+			}
+				
         }
 
         ScopeState GetScopeState(string scopeName)
         {
-            return states.GetValue(
-                scopeName,
-                statesLock,
-                () => new ScopeState());
+	       return states.GetOrAdd(scopeName, new ScopeState());
         }
 
-        void UpdateFromSyncStore(string scopeName, ScopeState state)
+        async Task UpdateFromSyncStore(string scopeName, ScopeState state)
         {
             var writesAttempted = 0;
 
             while (writesAttempted < maxWriteAttempts)
             {
-                var data = optimisticDataStore.GetData(scopeName);
+                var data = await optimisticDataStore.GetData(scopeName);
 
                 long nextId;
                 if (!long.TryParse(data, out nextId))
@@ -78,7 +78,7 @@ namespace SnowMaker
                 state.HighestIdAvailableInBatch = nextId - 1 + batchSize;
                 var firstIdInNextBatch = state.HighestIdAvailableInBatch + 1;
 
-                if (optimisticDataStore.TryOptimisticWrite(scopeName, firstIdInNextBatch.ToString(CultureInfo.InvariantCulture)))
+                if (await optimisticDataStore.TryOptimisticWrite(scopeName, firstIdInNextBatch.ToString(CultureInfo.InvariantCulture)))
                     return;
 
                 writesAttempted++;

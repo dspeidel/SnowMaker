@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SnowMaker;
 using System.Text;
 using System.IO;
+using Snowmaker.BlobStorage;
 
 namespace IntegrationTests.cs
 {
@@ -50,7 +51,12 @@ namespace IntegrationTests.cs
                 }
             }
 
-            public void Dispose()
+	        public string ReadCurrentPersistedValue(string scopeName)
+	        {
+				throw new NotImplementedException();
+	        }
+
+	        public void Dispose()
             {
                 var blobContainer = blobClient.GetContainerReference(ContainerName);
                 blobContainer.Delete();

@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnowMaker", "SnowMaker\SnowMaker.csproj", "{0AD4FCE5-6968-4B85-9159-50F63D168907}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7E1BB869-9152-48ED-9D43-D846800D7DBF}"
@@ -15,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{468FD4
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snowmaker.BlobStorage", "Snowmaker.BlobStorage\Snowmaker.BlobStorage.csproj", "{659DD16E-41AF-45D9-A407-5944ABFBC0C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +38,10 @@ Global
 		{697EEC17-828B-4AD0-B4BD-4F7422D406F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{697EEC17-828B-4AD0-B4BD-4F7422D406F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{697EEC17-828B-4AD0-B4BD-4F7422D406F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{659DD16E-41AF-45D9-A407-5944ABFBC0C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{659DD16E-41AF-45D9-A407-5944ABFBC0C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{659DD16E-41AF-45D9-A407-5944ABFBC0C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{659DD16E-41AF-45D9-A407-5944ABFBC0C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

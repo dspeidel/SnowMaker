@@ -24,9 +24,9 @@ namespace IntegrationTests.cs
             {
                 var ticks = DateTime.UtcNow.Ticks;
                 IdScopeName = string.Format("snowmakertest{0}", ticks);
-
-                DirectoryPath = Path.Combine(Path.GetTempPath(), IdScopeName);
-                Directory.CreateDirectory(DirectoryPath);
+				DirectoryPath = Path.Combine(@"C:\IDGen", IdScopeName);
+				//DirectoryPath = Path.Combine(Path.GetTempPath(), IdScopeName);
+				Directory.CreateDirectory(DirectoryPath);
             }
 
             public string IdScopeName { get; private set; }
@@ -38,7 +38,13 @@ namespace IntegrationTests.cs
                 return System.IO.File.ReadAllText(filePath);
             }
 
-            public void Dispose()
+			public string ReadCurrentPersistedValue(string scopeId)
+			{
+				var filePath = Path.Combine(DirectoryPath, string.Format("{0}.txt", scopeId));
+				return System.IO.File.ReadAllText(filePath);
+			}
+
+			public void Dispose()
             {
                 if (Directory.Exists(DirectoryPath))
                     Directory.Delete(DirectoryPath, true);
